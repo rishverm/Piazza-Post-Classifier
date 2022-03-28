@@ -126,4 +126,86 @@ private:
 //      // YOUR IMPLEMENTATION GOES HERE
 //    }
 
+
+// EFFECTS : Returns whether this Map is empty.
+template <typename K, typename V, typename C>
+    bool Map<K, V, C>::empty() const {
+        assert(false);
+    }
+
+
+// EFFECTS : Returns the number of elements in this Map.
+// NOTE : size_t is an integral type from the STL
+template <typename K, typename V, typename C>
+    size_t Map<K, V, C>::size() const {
+        assert(false);
+    }
+
+
+// EFFECTS : Searches this Map for an element with a key equivalent
+//           to k and returns an Iterator to the associated value if found,
+//           otherwise returns an end Iterator.
+//
+// HINT: Since Map is implemented using a BinarySearchTree that stores
+//       (key, value) pairs, you'll need to construct a dummy value
+//       using "Value_type()".
+template <typename K, typename V, typename C>
+    typename Map<K, V, C>::Iterator Map<K, V, C>::find(const K& k) const {
+        assert(false);
+    }
+
+
+// MODIFIES: this
+// EFFECTS : Returns a reference to the mapped value for the given
+//           key. If k matches the key of an element in the
+//           container, the function returns a reference to its
+//           mapped value. If k does not match the key of any
+//           element in the container, the function inserts a new
+//           element with that key and a value-initialized mapped
+//           value and returns a reference to the mapped value.
+//           Note: value-initialization for numeric types guarantees the
+//           value will be 0 (rather than memory junk).
+//
+// HINT:     In the case the key was not found, and you must insert a
+//           new element, use the expression {k, Value_type()} to create
+//           that element. This ensures the proper value-initialization is done.
+//
+// HINT: http://www.cplusplus.com/reference/map/map/operator[]/
+template <typename K, typename V, typename C>
+    V& Map<K, V, C>::operator[](const K& k) {
+        assert(false);
+    }
+
+
+// MODIFIES: this
+// EFFECTS : Inserts the given element into this Map if the given key
+//           is not already contained in the Map. If the key is
+//           already in the Map, returns an iterator to the
+//           corresponding existing element, along with the value
+//           false. Otherwise, inserts the given element and returns
+//           an iterator to the newly inserted element, along with
+//           the value true.
+template <typename K, typename V, typename C>
+    std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(const Pair_type &val) {
+        assert(false);
+    }
+
+
+// EFFECTS : Returns an iterator to the first key-value pair in this Map.
+template <typename K, typename V, typename C>
+    typename Map<K, V, C>::Iterator Map<K, V, C>::begin() const {
+        assert(false);
+    }
+
+// EFFECTS : Returns an iterator to "past-the-end".
+template <typename K, typename V, typename C>
+    typename Map<K, V, C>::Iterator Map<K, V, C>::end() const {
+        assert(false);
+    }
+
+
+
+
+
 #endif // DO NOT REMOVE!!!
+
