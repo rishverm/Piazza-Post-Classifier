@@ -82,8 +82,11 @@ private:
     Node *left;
     Node *right;
   };
+    
+   
 
 public:
+   
 
   // Default constructor
   // (Note this will default construct the less comparator)
@@ -331,7 +334,13 @@ private:
   // NOTE:    This function must run in constant time.
   //          No iteration or recursion is allowed.
   static bool empty_impl(const Node *node) {
-    assert(false);
+      if (node == nullptr) {
+          return true;
+      }
+      else {
+          return false;
+      }
+          
   }
 
   // EFFECTS: Returns the size of the tree rooted at 'node', which is the
@@ -339,7 +348,13 @@ private:
   //          tree is 0.
   // NOTE:    This function must be tree recursive.
   static int size_impl(const Node *node) {
-    assert(false);
+        if (empty_impl(node)) {                                        // empty tree
+          return 0;
+        }
+        else {                                            // non-empty tree
+          return 1 + size_impl(node->left) + size_impl(node->right);
+        }
+  
   }
 
   // EFFECTS: Returns the height of the tree rooted at 'node', which is the
@@ -347,7 +362,13 @@ private:
   //          The height of an empty tree is 0.
   // NOTE:    This function must be tree recursive.
   static int height_impl(const Node *node) {
-    assert(false);
+      if (empty_impl(node)) {
+          return 0;
+      }
+      
+      else {
+          return 1 + std::max(height_impl(node->left), height_impl(node->right));
+      }
   }
 
   // EFFECTS: Creates and returns a pointer to the root of a new node structure
@@ -355,7 +376,21 @@ private:
   //          tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static Node *copy_nodes_impl(Node *node) {
-    assert(false);
+     
+          Node *new_node = new Node;
+          new_node->datum = node->datum;
+          new_node->left = node->left;
+          new_node->right = node->right;
+          
+          if (new_node->right != nullptr) {
+              return copy_nodes_impl(new_node->right);
+          }
+          
+          if (new_node->left != nullptr) {
+              return copy_nodes_impl(new_node->left);
+          }
+          
+      return node;
   }
 
   // EFFECTS: Frees the memory for all nodes used in the tree rooted at 'node'.
