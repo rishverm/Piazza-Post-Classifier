@@ -38,7 +38,7 @@ TEST(test_find_1) {
 }
 
 TEST(test_insert_1) {
-    
+
 }
 
 TEST(test_min_element_1) {

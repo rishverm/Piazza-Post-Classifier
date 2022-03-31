@@ -431,7 +431,14 @@ private:
   //       template, NOT according to the < operator. Use the "less"
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
-    assert(false);
+      if (empty_impl(node)) {
+          Node* singleNode = new Node;
+          node = singleNode;
+          node->datum = item;
+          node->left = nullptr;
+          node->right = nullptr;
+          return node;
+      }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
