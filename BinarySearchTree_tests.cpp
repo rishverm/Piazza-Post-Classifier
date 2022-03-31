@@ -13,6 +13,17 @@ TEST(test_size_1) {
 
 TEST(test_size_2) {
     BinarySearchTree<int> tree;
+    Node * node1 = new node;
+    node1 = tree.insert(11);
+    tree.insert(9);
+    tree.insert(13);
+    
+    
+    cout << tree.size();
+}
+/*
+TEST(test_size_2) {
+    BinarySearchTree<int> tree;
     ASSERT_TRUE(tree.size() == 0);
     
 }
@@ -64,5 +75,5 @@ TEST(test_traverse_preorder_1) {
 TEST(test_min_greater_than_1) {
     
 }
-
+*/
 TEST_MAIN()

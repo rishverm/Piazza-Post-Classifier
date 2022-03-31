@@ -396,7 +396,24 @@ private:
   // EFFECTS: Frees the memory for all nodes used in the tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static void destroy_nodes_impl(Node *node) {
-    assert(false);
+      if (empty_impl(node)) {
+          return;
+      }
+      
+      //if node has a child, call destroy nodes again with child
+      if (node->right != nullptr) {
+          destroy_nodes_impl(node->right);
+      }
+      
+      if (node->left != nullptr) {
+          destroy_nodes_impl(node->left);
+      }
+      else {
+          delete node;
+          return;
+      }
+      
+    
   }
 
   // EFFECTS : Searches the tree rooted at 'node' for an element equivalent
@@ -412,7 +429,54 @@ private:
   //       Two elements A and B are equivalent if and only if A is
   //       not less than B and B is not less than A.
   static Node * find_impl(Node *node, const T &query, Compare less) {
-    assert(false);
+      if (empty_impl(node)) {
+          return nullptr;
+      }
+      
+      
+      //case with tree of one node
+      if (size_impl(node) == 1) {
+          if (node->datum == query) {
+              return node;
+          }
+          else {
+              return nullptr;
+          }
+      }
+       
+      
+      //
+      
+      if (find_impl(node, query, less)) {
+          //look right
+          if (node->right == nullptr) {
+              return nullptr;
+          }
+          else if (node->right->datum == query) {
+              return node->right;
+          }
+          else {
+              node = node->right;
+              find_impl(node, query, less);
+          }
+          
+      }
+      
+      else { //if node is not less than query
+          if (node->left == nullptr) {
+              return nullptr;
+          }
+          else if (node->left->datum == query) {
+              return node->left;
+          }
+          else {
+              node = node->left;
+              find_impl(node, query, less);
+          }
+      }
+      
+      return nullptr;
+      
   }
 
   // REQUIRES: item is not already contained in the tree rooted at 'node'
@@ -433,12 +497,50 @@ private:
   static Node * insert_impl(Node *node, const T &item, Compare less) {
       if (empty_impl(node)) {
           Node* singleNode = new Node;
-          node = singleNode;
-          node->datum = item;
-          node->left = nullptr;
-          node->right = nullptr;
-          return node;
+          singleNode->datum = item;
+          singleNode->left = nullptr;
+          singleNode->right = nullptr;
+          return singleNode;
       }
+      
+      //if item < node, then create a new recurse statement checking if item < node->left
+        //node = node->left
+      //if item > node, then create a new recurse statement checking if item < node->right
+        //node = node->right
+      
+      
+      if (insert_impl(node, item, less)) {
+          if (node->right == nullptr) {
+              Node * insertedNode = new Node;
+              insertedNode->datum = item;
+              insertedNode->left = nullptr;
+              insertedNode->right = nullptr;
+              
+              node->right = insertedNode;
+              return insertedNode;
+          }
+          
+        node = node->right;
+        insert_impl(node, item, less);
+          
+      }
+      
+      else {
+          if (node->left == nullptr) {
+              Node * insertedNode = new Node;
+              insertedNode->datum = item;
+              insertedNode->left = nullptr;
+              insertedNode->right = nullptr;
+              
+              node->left = insertedNode;
+              return insertedNode;
+          }
+          
+        node = node->left;
+        insert_impl(node, item, less);
+      }
+      
+      return nullptr;
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
