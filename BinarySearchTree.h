@@ -377,7 +377,11 @@ private:
   //          with the same elements and EXACTLY the same structure as the
   //          tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
-  static Node *copy_nodes_impl(Node *node) {
+    static Node *copy_nodes_impl(Node *node) {
+        
+        if (empty_impl(node)) {
+            return nullptr;
+        }
      
           Node *new_node = new Node;
           new_node->datum = node->datum;
@@ -402,15 +406,23 @@ private:
           return;
       }
       
-      //if node has a child, call destroy nodes again with child
+      
       if (node->right != nullptr) {
           destroy_nodes_impl(node->right);
       }
       
       if (node->left != nullptr) {
           destroy_nodes_impl(node->left);
+
       }
+      if (size_impl(node) == 1) {
+          delete node;
+          destroy_nodes_impl(nullptr);
+      }
+       //if size == 1, delete and then return
       delete node;
+      
+      
       return;
     
   }
