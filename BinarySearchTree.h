@@ -383,20 +383,11 @@ private:
             return nullptr;
         }
      
-          Node *new_node = new Node;
-          new_node->datum = node->datum;
-          new_node->left = node->left;
-          new_node->right = node->right;
-          
-          if (new_node->right != nullptr) {
-              copy_nodes_impl(new_node->right);
-          }
-          
-          if (new_node->left != nullptr) {
-              copy_nodes_impl(new_node->left);
-          }
-          
-      return node;
+        Node *new_node = new Node;
+        new_node->datum = node->datum;
+        new_node->left = copy_nodes_impl(node->left);
+        new_node->right = copy_nodes_impl(node->right);
+        return new_node;
   }
 
   // EFFECTS: Frees the memory for all nodes used in the tree rooted at 'node'.
@@ -405,26 +396,9 @@ private:
       if (empty_impl(node)) {
           return;
       }
-      
-      
-      if (node->right != nullptr) {
-          destroy_nodes_impl(node->right);
-      }
-      
-      if (node->left != nullptr) {
-          destroy_nodes_impl(node->left);
-
-      }
-      if (size_impl(node) == 1) {
-          delete node;
-          destroy_nodes_impl(nullptr);
-      }
-       //if size == 1, delete and then return
+      destroy_nodes_impl(node->left);
+      destroy_nodes_impl(node->right);
       delete node;
-      
-      
-      return;
-    
   }
 
   // EFFECTS : Searches the tree rooted at 'node' for an element equivalent
@@ -443,43 +417,19 @@ private:
       if (empty_impl(node)) {
           return nullptr;
       }
-      
-      
-      if (node->datum == query) {
+
+      if (!less(node->datum, query) && !less(query, node->datum)) {
           return node;
       }
-          
-       
+ 
       if (less(node->datum, query)) {
-          //look right
-          if (node->right == nullptr) {
-              return nullptr;
+          node = node->right;
+          return find_impl(node, query, less);
           }
-          else if (node->right->datum == query) {
-              return node->right;
-          }
-          else {
-              node = node->right;
-              find_impl(node, query, less);
-          }
-          
-      }
-      
       else { //if node is not less than query
-          if (node->left == nullptr) {
-              return nullptr;
-          }
-          else if (node->left->datum == query) {
-              return node->left;
-          }
-          else {
-              node = node->left;
-              find_impl(node, query, less);
-          }
-      }
-      
-      return nullptr;
-      
+          node = node->left;
+          return find_impl(node, query, less);
+      } 
   }
 
   // REQUIRES: item is not already contained in the tree rooted at 'node'
@@ -499,11 +449,10 @@ private:
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
       if (empty_impl(node)) {
-          Node* singleNode = new Node;
-          singleNode->datum = item;
-          singleNode->left = nullptr;
-          singleNode->right = nullptr;
-          return singleNode;
+          node->datum = item;
+          node->left = nullptr;
+          node->right = nullptr;
+          return node;
       }
       
       //if item < node, then create a new recurse statement checking if item < node->left
@@ -514,28 +463,21 @@ private:
       
       if (less(node->datum, item)) {
           if (node->right == nullptr) {
-              Node * insertedNode = new Node;
-              insertedNode->datum = item;
-              insertedNode->left = nullptr;
-              insertedNode->right = nullptr; 
-              
-              node->right = insertedNode;
+              node->right->datum=item;
+             
+              node->right->left = nullptr;
+              node->right->right = nullptr;
           }
           else {
               node = node->right;
               insert_impl(node, item, less);
-          }
-        
-          
+          }    
       }
       else {
           if (node->left == nullptr) {
-              Node* insertedNode = new Node;
-              insertedNode->datum = item;
-              insertedNode->left = nullptr;
-              insertedNode->right = nullptr;
-
-              node->left = insertedNode;
+              node->left->datum = item;
+              node->left->left = nullptr;
+              node->left->right = nullptr;
           }
           else {
               node = node->left;
@@ -544,7 +486,6 @@ private:
 
 
       }
-
       return node;
   }
 
@@ -561,7 +502,7 @@ private:
      }
      if (node->left != nullptr) {
          node = node->left;
-         min_element_impl(node);
+         return min_element_impl(node);
      }
      return node;
   }
@@ -577,7 +518,7 @@ private:
       }
       if (node->right != nullptr) {
           node = node->right;
-          max_element_impl(node);
+          return max_element_impl(node);
       }
       return node;
   }
