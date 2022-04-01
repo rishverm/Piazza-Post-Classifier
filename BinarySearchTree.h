@@ -333,6 +333,8 @@ private:
   // EFFECTS: Returns whether the tree rooted at 'node' is empty.
   // NOTE:    This function must run in constant time.
   //          No iteration or recursion is allowed.
+
+
   static bool empty_impl(const Node *node) {
       if (node == nullptr) {
           return true;
@@ -383,11 +385,11 @@ private:
           new_node->right = node->right;
           
           if (new_node->right != nullptr) {
-              return copy_nodes_impl(new_node->right);
+              copy_nodes_impl(new_node->right);
           }
           
           if (new_node->left != nullptr) {
-              return copy_nodes_impl(new_node->left);
+              copy_nodes_impl(new_node->left);
           }
           
       return node;
@@ -408,11 +410,8 @@ private:
       if (node->left != nullptr) {
           destroy_nodes_impl(node->left);
       }
-      else {
-          delete node;
-          return;
-      }
-      
+      delete node;
+      return;
     
   }
 
@@ -434,20 +433,12 @@ private:
       }
       
       
-      //case with tree of one node
-      if (size_impl(node) == 1) {
-          if (node->datum == query) {
-              return node;
-          }
-          else {
-              return nullptr;
-          }
+      if (node->datum == query) {
+          return node;
       }
+          
        
-      
-      //
-      
-      if (find_impl(node, query, less)) {
+      if (less(node->datum, query)) {
           //look right
           if (node->right == nullptr) {
               return nullptr;
@@ -509,38 +500,40 @@ private:
         //node = node->right
       
       
-      if (insert_impl(node, item, less)) {
+      if (less(node->datum, item)) {
           if (node->right == nullptr) {
               Node * insertedNode = new Node;
               insertedNode->datum = item;
               insertedNode->left = nullptr;
-              insertedNode->right = nullptr;
+              insertedNode->right = nullptr; 
               
               node->right = insertedNode;
-              return insertedNode;
           }
-          
-        node = node->right;
-        insert_impl(node, item, less);
+          else {
+              node = node->right;
+              insert_impl(node, item, less);
+          }
+        
           
       }
-      
       else {
           if (node->left == nullptr) {
-              Node * insertedNode = new Node;
+              Node* insertedNode = new Node;
               insertedNode->datum = item;
               insertedNode->left = nullptr;
               insertedNode->right = nullptr;
-              
+
               node->left = insertedNode;
-              return insertedNode;
           }
-          
-        node = node->left;
-        insert_impl(node, item, less);
+          else {
+              node = node->left;
+              insert_impl(node, item, less);
+          }
+
+
       }
-      
-      return nullptr;
+
+      return node;
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
@@ -551,7 +544,14 @@ private:
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the smallest element lives.
   static Node * min_element_impl(Node *node) {
-    assert(false);
+     if (empty_impl(node)) {
+          return nullptr;
+     }
+     if (node->left != nullptr) {
+         node = node->left;
+         min_element_impl(node);
+     }
+     return node;
   }
 
   // EFFECTS : Returns a pointer to the Node containing the maximum element
@@ -560,7 +560,14 @@ private:
   // HINT: You don't need to compare any elements! Think about the
   //       structure, and where the largest element lives.
   static Node * max_element_impl(Node *node) {
-    assert(false);
+      if (empty_impl(node)) {
+          return nullptr;
+      }
+      if (node->right != nullptr) {
+          node = node->right;
+          max_element_impl(node);
+      }
+      return node;
   }
 
 
