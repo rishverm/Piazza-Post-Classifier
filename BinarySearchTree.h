@@ -541,7 +541,7 @@ private:
       if (empty_impl(node)) {
           return true;
       }
-      if (node->left == nullptr && node->right == nullptr) {
+      if (node->left == nullptr) {
           return true;
       }
       
@@ -556,8 +556,12 @@ private:
           
       }
       
+      if (node->right == nullptr) {
+          return true;
+      }
+      
       //if the node->right is less than node, return false
-      if (less(node->right->datum, node->datum)) {
+      else if (less(node->right->datum, node->datum)) {
           return false;
       }
       

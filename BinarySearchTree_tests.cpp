@@ -216,12 +216,14 @@ TEST(test_max_element_1) {
     
 }
 
+//test sorting invariant with empty tree
 TEST(test_sorting_invariant_0) {
     BinarySearchTree<int> b;
    
     ASSERT_TRUE(b.check_sorting_invariant());
 }
 
+//test sorting invariant with root node and a node to the left, then break it
 TEST(test_sorting_invariant_1) {
     BinarySearchTree<int> b;
     b.insert(1);
@@ -231,13 +233,65 @@ TEST(test_sorting_invariant_1) {
     ASSERT_FALSE(b.check_sorting_invariant());
 }
 
-TEST(test_sorting_invariant_2) {
+
+
+
+
+//test sorting invariant with root node and a node to the left
+TEST(test_sorting_invariant_3) {
     BinarySearchTree<int> b;
     b.insert(1);
     b.insert(0);
     
     ASSERT_TRUE(b.check_sorting_invariant());
 }
+
+//test sorting invariant with root node and node to the right
+TEST(test_sorting_invariant_4) {
+    BinarySearchTree<int> b;
+    b.insert(1);
+    b.insert(2);
+    
+    ASSERT_TRUE(b.check_sorting_invariant());
+}
+
+//test sorting invariant with just a root node
+TEST(test_sorting_invariant_5) {
+    BinarySearchTree<int> b;
+    b.insert(1);
+    
+    ASSERT_TRUE(b.check_sorting_invariant());
+}
+
+//test sorting invariant with complicated branches sorted
+TEST(test_sorting_invariant_6) {
+    BinarySearchTree<int> b;
+    b.insert(1);
+    b.insert(2);
+    b.insert(4);
+    b.insert(0);
+    b.insert(3);
+    b.insert(-1);
+    
+    ASSERT_TRUE(b.check_sorting_invariant());
+}
+
+//test sorting invariant with branch sorted, but whole tree not sorted
+TEST(test_sorting_invariant_7) {
+    BinarySearchTree<int> b;
+    b.insert(3);
+    b.insert(1);
+    b.insert(0);
+    b.insert(5);
+    b.insert(4);
+    b.insert(6);
+    *b.find(4) = 2;
+    
+    
+    ASSERT_FALSE(b.check_sorting_invariant());
+    //WE HAVE A BUG
+}
+
 
 
 TEST(test_traverse_order_1) {
