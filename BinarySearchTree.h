@@ -447,65 +447,75 @@ private:
   //       associated with this instantiation of the BinarySearchTree
   //       template, NOT according to the < operator. Use the "less"
   //       parameter to compare elements.
-  static Node * insert_impl(Node *node, const T &item, Compare less) {
-      if (empty_impl(node)) {
-          node->datum = item;
-          node->left = nullptr;
-          node->right = nullptr;
+    static Node * insert_impl(Node * node, const T &item, Compare less) {
+        
+          if (empty_impl(node)) {
+              Node * singleNode = new Node;
+              singleNode->datum = item;
+              singleNode->left = nullptr;
+              singleNode->right = nullptr;
+              return singleNode;
+          }
+
+          //if item < node, then create a new recurse statement checking if item < node->left
+            //node = node->left
+          //if item > node, then create a new recurse statement checking if item < node->right
+            //node = node->right
+
+
+          if (less(node->datum, item)) {
+              if (node->right == nullptr) {
+                  Node * insertedNode = new Node;
+                  insertedNode->datum = item;
+                  insertedNode->left = nullptr;
+                  insertedNode->right = nullptr;
+
+                  node->right = insertedNode;
+              }
+              else {
+                  
+                  insert_impl(node->right, item, less);
+              }
+
+
+          }
+          else {
+              if (node->left == nullptr) {
+                  Node* insertedNode = new Node;
+                  insertedNode->datum = item;
+                  insertedNode->left = nullptr;
+                  insertedNode->right = nullptr;
+
+                  node->left = insertedNode;
+              }
+              else {
+                  
+                  insert_impl(node->left, item, less);
+              }
+
+
+          }
+
           return node;
       }
-      
-      //if item < node, then create a new recurse statement checking if item < node->left
-        //node = node->left
-      //if item > node, then create a new recurse statement checking if item < node->right
-        //node = node->right
-      
-      
-      if (less(node->datum, item)) {
-          if (node->right == nullptr) {
-              node->right->datum=item;
-             
-              node->right->left = nullptr;
-              node->right->right = nullptr;
-          }
-          else {
-              node = node->right;
-              insert_impl(node, item, less);
-          }    
+    
+    // EFFECTS : Returns a pointer to the Node containing the minimum element
+      //           in the tree rooted at 'node' or a null pointer if the tree is empty.
+      // NOTE: This function must be tail recursive.
+      // NOTE: This function is used in the implementation of the ++ operator for
+      //       the iterator code that is provided for you.
+      // HINT: You don't need to compare any elements! Think about the
+      //       structure, and where the smallest element lives.
+    static Node * min_element_impl(Node *node) {
+         if (empty_impl(node)) {
+              return nullptr;
+         }
+         if (node->left != nullptr) {
+             node = node->left;
+             return min_element_impl(node);
+         }
+         return node;
       }
-      else {
-          if (node->left == nullptr) {
-              node->left->datum = item;
-              node->left->left = nullptr;
-              node->left->right = nullptr;
-          }
-          else {
-              node = node->left;
-              insert_impl(node, item, less);
-          }
-
-
-      }
-      return node;
-  }
-
-  // EFFECTS : Returns a pointer to the Node containing the minimum element
-  //           in the tree rooted at 'node' or a null pointer if the tree is empty.
-  // NOTE: This function must be tail recursive.
-  // NOTE: This function is used in the implementation of the ++ operator for
-  //       the iterator code that is provided for you.
-  // HINT: You don't need to compare any elements! Think about the
-  //       structure, and where the smallest element lives.
-  static Node * min_element_impl(Node *node) {
-     if (empty_impl(node)) {
-          return nullptr;
-     }
-     if (node->left != nullptr) {
-         node = node->left;
-         return min_element_impl(node);
-     }
-     return node;
-  }
 
   // EFFECTS : Returns a pointer to the Node containing the maximum element
   //           in the tree rooted at 'node' or a null pointer if the tree is empty.
@@ -528,8 +538,41 @@ private:
   //          rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static bool check_sorting_invariant_impl(const Node *node, Compare less) {
-    assert(false);
+      if (empty_impl(node)) {
+          return true;
+      }
+      if (node->left == nullptr && node->right == nullptr) {
+          return true;
+      }
+      
+      //if the left of node is not less than node, return false
+      if (!less(node->left->datum, node->datum)) {
+          return false;
+      }
+      
+      //else, recurse with node->left
+      else {
+          check_sorting_invariant_impl(node->left, less);
+          
+      }
+      
+      //if the node->right is less than node, return false
+      if (less(node->right->datum, node->datum)) {
+          return false;
+      }
+      
+      //else, recurse with node->right
+      else {
+          check_sorting_invariant_impl(node->right, less);
+          
+      }
+        
+      
+      return true;
   }
+      
+      
+  
 
   // EFFECTS : Traverses the tree rooted at 'node' using an in-order traversal,
   //           printing each element to os in turn. Each element is followed
