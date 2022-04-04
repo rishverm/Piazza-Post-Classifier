@@ -538,13 +538,20 @@ private:
   //          rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static bool check_sorting_invariant_impl(const Node *node, Compare less) {
+      //issue with branches sorted, but whole tree not sorted
+      //issue with broken invariant, but returning the truth of final sorted recursion (returns whether last check was true)
       if (empty_impl(node)) {
           return true;
       }
+      
       if (node->left == nullptr) {
           return true;
       }
       
+      
+      
+      
+      const Node * maxNode = max_element_impl(node->left);
       //if the left of node is not less than node, return false
       if (!less(node->left->datum, node->datum)) {
           return false;
@@ -552,23 +559,36 @@ private:
       
       //else, recurse with node->left
       else {
-          check_sorting_invariant_impl(node->left, less);
-          
+          //check_sorting_invariant_impl(node->left, less);
+          if (!check_sorting_invariant_impl(node->left, less)) return false;
+            
       }
       
+      //check max of branch
+      if (!less(maxNode->datum, node->datum)) {
+          return false;
+      }
+      
+      
+      const Node * minNode = min_element_impl(node->right);
       if (node->right == nullptr) {
           return true;
       }
       
+      
       //if the node->right is less than node, return false
-      else if (less(node->right->datum, node->datum)) {
+      if (less(node->right->datum, node->datum)) {
           return false;
       }
       
       //else, recurse with node->right
       else {
-          check_sorting_invariant_impl(node->right, less);
-          
+          //check_sorting_invariant_impl(node->right, less);
+          if (!check_sorting_invariant_impl(node->right, less)) return false;
+      }
+      
+      if (less(minNode->datum, node->datum)) {
+          return false;
       }
         
       
@@ -586,7 +606,18 @@ private:
   //       See https://en.wikipedia.org/wiki/Tree_traversal#In-order
   //       for the definition of a in-order traversal.
   static void traverse_inorder_impl(const Node *node, std::ostream &os) {
-    assert(false);
+      //PRINT FROM SMALLEST TO LARGEST
+      
+      if (empty_impl(node)) {
+          return;
+      }
+      
+      else {
+          traverse_inorder_impl(node->left, os);
+          os << node->datum << " ";
+          traverse_inorder_impl(node->right, os);
+      }
+      
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using a pre-order traversal,
@@ -597,7 +628,16 @@ private:
   //       See https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
   //       for the definition of a pre-order traversal.
   static void traverse_preorder_impl(const Node *node, std::ostream &os) {
-    assert(false);
+      //PRINT LEFTMOST NODES
+      if (empty_impl(node)) {
+          return;
+      }
+      
+      else {
+          os << node->datum << " ";
+          traverse_preorder_impl(node->left, os);
+          traverse_preorder_impl(node->right, os);
+      }
   }
 
   // EFFECTS : Returns a pointer to the Node containing the smallest element
@@ -612,7 +652,32 @@ private:
   //       'less' parameter). Based on the result, you gain some information
   //       about where the element you're looking for could be.
   static Node * min_greater_than_impl(Node *node, const T &val, Compare less) {
-    assert(false);
+      if (empty_impl(node)) return nullptr;
+      
+      //if (less(max_element_impl(node)->datum, val)) return nullptr;
+          
+      //if val is greater than or equal to node datum (not less than node_>datum)
+      else if (!less(val, node->datum)) {
+          return min_greater_than_impl(node->right, val, less);
+      }
+      
+      
+      // else, val is less than or equal to node->datum,
+      else {
+          Node * left_check = min_greater_than_impl(node->left, val, less);
+          //if equal to nullptr, this is the smallest value greater than val
+          if (left_check == nullptr) {
+              return node;
+          }
+          
+          //else, there is a small node greater than val
+          else {
+              return left_check;
+          }
+          
+      }
+      
+      
   }
 
 

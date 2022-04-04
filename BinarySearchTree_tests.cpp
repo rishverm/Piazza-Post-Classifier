@@ -55,6 +55,17 @@ TEST(test_assignment_2) {
     
 }
 
+//test when lhs = rhs = 0
+TEST(test_assignment_3) {
+    BinarySearchTree<int> tree;
+    ASSERT_TRUE(tree.size() == 0);
+    
+    BinarySearchTree<int> tree0;
+    tree = tree0;
+    //tree should be empty
+    ASSERT_TRUE(tree.size() == 0);
+}
+
 
 //test empty tree height
 TEST(test_height_1) {
@@ -204,16 +215,52 @@ TEST(test_find_5) {
     ASSERT_TRUE(tree.find(50) == tree.end());
 }
 
-TEST(test_insert_1) {
-
+//test with lots of elements
+TEST(test_min_element_1) {
+    BinarySearchTree<int> b;
+    b.insert(3);
+    b.insert(1);
+    b.insert(0);
+    b.insert(5);
+    b.insert(4);
+    b.insert(6);
+    ASSERT_TRUE(*b.min_element() == 0);
 }
 
-TEST(test_min_element_1) {
-    
+//test with empty tree
+TEST(test_min_element_2) {
+    BinarySearchTree<int> b;
+    ASSERT_EQUAL(b.min_element(), b.end());
+}
+
+TEST(test_min_element_3) {
+    BinarySearchTree<int> b;
+    b.insert(3);
+    ASSERT_TRUE(*b.min_element() == 3);
 }
 
 TEST(test_max_element_1) {
-    
+    BinarySearchTree<int> b;
+    b.insert(3);
+    b.insert(1);
+    b.insert(0);
+    b.insert(5);
+    b.insert(4);
+    b.insert(6);
+    ASSERT_TRUE(*b.max_element() == 6);
+}
+
+//test max with 1 node
+TEST(test_max_element_2) {
+    BinarySearchTree<int> b;
+    b.insert(3);
+    ASSERT_TRUE(*b.max_element() == 3);
+}
+
+//test max with empty tree
+TEST(test_max_element_3) {
+    BinarySearchTree<int> b;
+    ASSERT_EQUAL(b.max_element(), b.end());
 }
 
 //test sorting invariant with empty tree
@@ -232,9 +279,6 @@ TEST(test_sorting_invariant_1) {
     *b.begin() = 2;
     ASSERT_FALSE(b.check_sorting_invariant());
 }
-
-
-
 
 
 //test sorting invariant with root node and a node to the left
@@ -276,6 +320,7 @@ TEST(test_sorting_invariant_6) {
     ASSERT_TRUE(b.check_sorting_invariant());
 }
 
+
 //test sorting invariant with branch sorted, but whole tree not sorted
 TEST(test_sorting_invariant_7) {
     BinarySearchTree<int> b;
@@ -287,23 +332,161 @@ TEST(test_sorting_invariant_7) {
     b.insert(6);
     *b.find(4) = 2;
     
+    ASSERT_FALSE(b.check_sorting_invariant());
+    
+}
+
+TEST(test_sorting_invariant_8) {
+    BinarySearchTree<int> b;
+    b.insert(3);
+    b.insert(1);
+    b.insert(0);
+    b.insert(5);
+    b.insert(4);
+    b.insert(6);
+    *b.find(4) = 7;
     
     ASSERT_FALSE(b.check_sorting_invariant());
-    //WE HAVE A BUG
-}
-
-
-
-TEST(test_traverse_order_1) {
     
 }
 
+//test inorder with 1 node
+TEST(test_traverse_inorder_1) {
+    BinarySearchTree<int> tree;
+    tree.insert(3);
+    ostringstream oss_inorder;
+    tree.traverse_inorder(oss_inorder);
+    cout << "inorder" << endl;
+    cout << oss_inorder.str() << endl << endl;
+    ASSERT_TRUE(oss_inorder.str() == "3 ");
+    
+    
+}
+
+//test inorder with 0 nodes
+TEST(test_traverse_inorder_2) {
+    BinarySearchTree<int> tree;
+    ostringstream oss_inorder;
+    tree.traverse_inorder(oss_inorder);
+    cout << "inorder" << endl;
+    cout << oss_inorder.str() << endl << endl;
+    ASSERT_TRUE(oss_inorder.str() == "");
+}
+
+//test inorder with 3 nodes
+TEST(test_traverse_inorder_3) {
+    BinarySearchTree<int> tree;
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    ostringstream oss_inorder;
+    tree.traverse_inorder(oss_inorder);
+    cout << "inorder" << endl;
+    cout << oss_inorder.str() << endl << endl;
+    ASSERT_TRUE(oss_inorder.str() == "5 10 15 ");
+}
+
+TEST(test_traverse_inorder_4) {
+    BinarySearchTree<int> tree;
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(2);
+    tree.insert(4);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(12);
+    tree.insert(17);
+    tree.insert(18);
+    tree.insert(11);
+    tree.insert(14);
+    tree.insert(16);
+    ostringstream oss_inorder;
+    tree.traverse_inorder(oss_inorder);
+    cout << "inorder" << endl;
+    cout << oss_inorder.str() << endl << endl;
+    ASSERT_TRUE(oss_inorder.str() == "1 2 3 4 5 10 11 12 14 15 16 17 18 ");
+}
+
+//test with 0 nodes
 TEST(test_traverse_preorder_1) {
-    
+    BinarySearchTree<int> tree;
+    ostringstream oss_preorder;
+    tree.traverse_preorder(oss_preorder);
+    cout << "preorder" << endl;
+    cout << oss_preorder.str() << endl << endl;
+    ASSERT_TRUE(oss_preorder.str() == "");
 }
 
-TEST(test_min_greater_than_1) {
-    
+//test with 1 node
+TEST(test_traverse_preorder_2) {
+    BinarySearchTree<int> tree;
+    tree.insert(16);
+    ostringstream oss_preorder;
+    tree.traverse_preorder(oss_preorder);
+    cout << "preorder" << endl;
+    cout << oss_preorder.str() << endl << endl;
+    ASSERT_TRUE(oss_preorder.str() == "16 ");
 }
+
+TEST(test_traverse_preorder_3) {
+    BinarySearchTree<int> tree;
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(2);
+    tree.insert(4);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(12);
+    tree.insert(17);
+    tree.insert(18);
+    tree.insert(11);
+    tree.insert(14);
+    tree.insert(16);
+    ostringstream oss_preorder;
+    tree.traverse_preorder(oss_preorder);
+    cout << "preorder" << endl;
+    cout << oss_preorder.str() << endl << endl;
+    ASSERT_TRUE(oss_preorder.str() == "10 5 2 1 4 3 15 12 11 14 17 16 18 ");
+}
+
+//root node less than val (returns nullptr immediately)
+//test min_greater_than with 1 node tree
+TEST(test_min_greater_than_1) {
+    BinarySearchTree<int> tree;
+    tree.insert(16);
+    ASSERT_TRUE(*tree.min_greater_than(5) == 16);
+}
+
+
+//test with empty tree
+TEST(test_min_greater_than_2) {
+    BinarySearchTree<int> tree;
+    ASSERT_EQUAL(tree.min_greater_than(5), tree.end());
+}
+
+//root node greater than val
+TEST(test_min_greater_than_3) {
+    BinarySearchTree<int> tree;
+    tree.insert(16);
+    ASSERT_EQUAL(tree.min_greater_than(20), tree.end());
+}
+
+//test where root node is val
+TEST(test_min_greater_than_4) {
+    BinarySearchTree<int> tree;
+    tree.insert(16);
+    tree.insert(17);
+    ASSERT_TRUE(*tree.min_greater_than(16) == 17);
+}
+
+TEST(test_min_greater_than_5) {
+    BinarySearchTree<int> tree;
+    tree.insert(16);
+    ASSERT_EQUAL(tree.min_greater_than(16), tree.end());
+}
+
+
 
 TEST_MAIN()
