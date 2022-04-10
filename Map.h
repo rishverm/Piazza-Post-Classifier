@@ -164,7 +164,9 @@ template <typename K, typename V, typename C>
     typename Map<K, V, C>::Iterator Map<K, V, C>::find(const K& k) const {
         std::pair<K, V> combo;
         combo.first = k;
+        //variable.begin().root->second;
         combo.second = V();
+        //combo.second = variable->second; //want combo.second = variable->datum->second
         return variable.find(combo);
     }
 
@@ -211,11 +213,11 @@ template <typename K, typename V, typename C>
 template <typename K, typename V, typename C>
     std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(const Pair_type &val) {
        //if key is in Map, return false and corresponding iterator
-        for (auto &val : variable) {
-            if (variable.find(val) != variable.end()) {
-                return std::pair<Iterator, bool>{variable.find(val), false};
-            }
+        
+        if (variable.find(val) != variable.end()) {
+            return std::pair<Iterator, bool>{variable.find(val), false};
         }
+       
         //if key is not in Map, insert it and return true
         
         return std::pair<Iterator, bool>{variable.insert(val), true};
