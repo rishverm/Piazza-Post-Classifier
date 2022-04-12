@@ -49,8 +49,36 @@ int main (int argc, char *argv[]) {
     private:
         int numberOfPosts;
         int numberOfUniqueWords;
+        bool debug;
         
     public:
+        //1.open csvstream
+        //2. read values from csvstream
+        //3. store values in variables
+        void ClassifierTrain(string file) {
+            csvstream fileTrain(file);
+            map<string, string> row;
+            while (fileTrain >> row) {
+                string post = row["content"];
+                numberOfPosts += 1;
+                
+            }
+        }
+        set<string> unique_words(const string& str) {
+            istringstream source(str);
+            set<string> words;
+            string word;
+            // Read word by word from the stringstream and insert into the set
+            while (source >> word) {
+                words.insert(word);
+            }
+            return words;
+        }
+
+        
+
+
+
         // EFFECTS: Returns a set containing the unique "words" in the original
         //          string, delimited by whitespace
         /*
