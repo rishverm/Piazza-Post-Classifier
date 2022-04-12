@@ -48,39 +48,51 @@ int main (int argc, char *argv[]) {
 
     class Classifier {
     private:
-        int numberOfPosts;
-        int numberOfTotalUniqueWords;
+        int numberOfPosts; //total number of posts (1) completed
+        int numberOfTotalUniqueWords; //number of unique words in entire set (2) completed
         bool debug;
         int numPostsWithW;
         string allWords;
-        
+        string allLabel;
+        map <string, int> uniqueWords; //number of posts in set that contain unique words (3) completed
+        map <string, int> uniqueLabels; //number of posts in set that contain label (4) completed
     public:
         //1. open csvstream
         //2. read values from csvstream
         //3. store values in variables
+        /*
+    XThe total number of posts in the entire training set.
+    XThe number of unique words in the entire training set. (The vocabulary size.)
+    For each word w, the number of posts in the entire training set that contain w.
+    For each label , the number of posts with that label.
+    For each label  and word , the number of posts with label  that contain .
+     */
+
+        //rather than making a big string , automatically update the maps
         void ClassifierTrain(string file) {
             allWords = "";
             csvstream fileTrain(file);
             map<string, string> row;
             while (fileTrain >> row) {
                 string post = row["content"];
+                string label = row["tag"];
+                allLabel = allLabel + label + " ";
+
                 
                 allWords = allWords + post + " ";
                 numberOfPosts += 1;
             }
             set<string> words = unique_words(allWords);
+            set<string> labels = unique_words(allLabel);
             numberOfTotalUniqueWords = (int)words.size();
-
-
-
-            
+            wordAmountFinder(words, file);    
+            labelAmountFinder(labels, file);
             
         }
         void wordAmountFinder(set<string> words, string file) {
             set<string>::iterator itr;
             for (itr = words.begin(); itr != words.end(); itr++) {
                 int wordAmount = 0;
-                map<string, int> uniquewordMaps;
                 csvstream fileTrain(file);
                 map<string, string> row;
                 while (fileTrain >> row) {
@@ -89,9 +101,25 @@ int main (int argc, char *argv[]) {
                         wordAmount += 1;
                     }
                 }
-                uniquewordMaps[*itr] = wordAmount;
+                uniqueWords[*itr] = wordAmount;
             }
         }
+        void labelAmountFinder(set<string> labels, string file) {
+            set<string>::iterator itr;
+            for (itr = labels.begin(); itr != labels.end(); itr++) {
+                int labelAmount = 0;
+                csvstream fileTrain(file);
+                map<string, string> row;
+                while (fileTrain >> row) {
+                    string post = row["tag"];
+                    if (post.find(*itr)) {
+                        labelAmount += 1;
+                    }
+                }
+                uniqueLabels[*itr] = labelAmount;
+            }
+        }
+
         
         set<string> unique_words(const string& str) {
             istringstream source(str);
@@ -118,13 +146,7 @@ int main (int argc, char *argv[]) {
     //should we have a set/vector for each post? should we then have an array of the sets
 
     
-    /*
-    XThe total number of posts in the entire training set.
-    XThe number of unique words in the entire training set. (The vocabulary size.)
-    For each word w, the number of posts in the entire training set that contain w.
-    For each label , the number of posts with that label.
-    For each label  and word , the number of posts with label  that contain .
-     */
+    
   // Open file
   csvstream csvin(argv[1]);
 
