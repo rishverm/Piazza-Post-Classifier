@@ -70,7 +70,27 @@ int main (int argc, char *argv[]) {
             }
             set<string> words = unique_words(allWords);
             numberOfTotalUniqueWords = (int)words.size();
+
+
+
             
+            
+        }
+        void wordAmountFinder(set<string> words, string file) {
+            set<string>::iterator itr;
+            for (itr = words.begin(); itr != words.end(); itr++) {
+                int wordAmount = 0;
+                map<string, int> uniquewordMaps;
+                csvstream fileTrain(file);
+                map<string, string> row;
+                while (fileTrain >> row) {
+                    string post = row["content"];
+                    if (post.find(*itr)) {
+                        wordAmount += 1;
+                    }
+                }
+                uniquewordMaps[*itr] = wordAmount;
+            }
         }
         
         set<string> unique_words(const string& str) {
