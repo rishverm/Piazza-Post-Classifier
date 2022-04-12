@@ -9,6 +9,7 @@ using namespace std;
 #include <string>
 #include <cstring>
 #include <map>
+#include <set>
 using namespace std;
 
 
@@ -48,22 +49,30 @@ int main (int argc, char *argv[]) {
     class Classifier {
     private:
         int numberOfPosts;
-        int numberOfUniqueWords;
+        int numberOfTotalUniqueWords;
         bool debug;
+        int numPostsWithW;
+        string allWords;
         
     public:
-        //1.open csvstream
+        //1. open csvstream
         //2. read values from csvstream
         //3. store values in variables
         void ClassifierTrain(string file) {
+            allWords = "";
             csvstream fileTrain(file);
             map<string, string> row;
             while (fileTrain >> row) {
                 string post = row["content"];
-                numberOfPosts += 1;
                 
+                allWords = allWords + post + " ";
+                numberOfPosts += 1;
             }
+            set<string> words = unique_words(allWords);
+            numberOfTotalUniqueWords = (int)words.size();
+            
         }
+        
         set<string> unique_words(const string& str) {
             istringstream source(str);
             set<string> words;
@@ -75,24 +84,8 @@ int main (int argc, char *argv[]) {
             return words;
         }
 
-        
 
 
-
-        // EFFECTS: Returns a set containing the unique "words" in the original
-        //          string, delimited by whitespace
-        /*
-        set<string> unique_words(const string &str) {
-         istringstream source(str);
-         set<string> words;
-         string word;
-         // Read word by word from the stringstream and insert into the set
-         while (source >> word) {
-           words.insert(word);
-         }
-         return words;
-        }
-         */
         
     };
     
@@ -104,6 +97,14 @@ int main (int argc, char *argv[]) {
     //is a set a vector?
     //should we have a set/vector for each post? should we then have an array of the sets
 
+    
+    /*
+    XThe total number of posts in the entire training set.
+    XThe number of unique words in the entire training set. (The vocabulary size.)
+    For each word w, the number of posts in the entire training set that contain w.
+    For each label , the number of posts with that label.
+    For each label  and word , the number of posts with label  that contain .
+     */
   // Open file
   csvstream csvin(argv[1]);
 
