@@ -48,62 +48,109 @@ int main (int argc, char *argv[]) {
 
     class Classifier {
     private:
-        int numberOfPosts; //total number of posts (1) completed
-        int numberOfTotalUniqueWords; //number of unique words in entire set (2) completed
+        int numberOfPosts; //1
+        map <string, int> uniqueWords; //2,3
+        map <string, int> uniqueLabels; //4
+        map<pair<std::string, std::string>, int> part5; //5
         bool debug;
-        int numPostsWithW;
-        string allWords;
-        string allLabel;
-        map <string, int> uniqueWords; //number of posts in set that contain unique words (3) completed
-        map <string, int> uniqueLabels; //number of posts in set that contain label (4) completed
+        vector<string> allTags;
+        vector<string> allWords;
+        
     public:
-        //1. open csvstream
-        //2. read values from csvstream
-        //3. store values in variables
-        /*
-    XThe total number of posts in the entire training set.
-    XThe number of unique words in the entire training set. (The vocabulary size.)
-    For each word w, the number of posts in the entire training set that contain w.
-    For each label , the number of posts with that label.
-    For each label  and word , the number of posts with label  that contain .
-     */
-
-        //rather than making a big string , automatically update the maps
         void ClassifierTrain(string file) {
-            allWords = "";
             csvstream fileTrain(file);
             map<string, string> row;
-            while (fileTrain >> row) {
-                string post = row["content"];
-                string label = row["tag"];
-                allLabel = allLabel + label + " ";
-
-                
-                allWords = allWords + post + " ";
-                numberOfPosts += 1;
+            if (debug==true) {
+                cout << "training data:" << endl;
             }
-            set<string> words = unique_words(allWords);
-            set<string> labels = unique_words(allLabel);
-            numberOfTotalUniqueWords = (int)words.size();
-            wordAmountFinder(words, file);    
-            labelAmountFinder(labels, file);
-            
-        }
-        void wordAmountFinder(set<string> words, string file) {
-            set<string>::iterator itr;
-            for (itr = words.begin(); itr != words.end(); itr++) {
-                int wordAmount = 0;
-                csvstream fileTrain(file);
-                map<string, string> row;
-                while (fileTrain >> row) {
-                    string post = row["content"];
-                    if (post.find(*itr)) {
-                        wordAmount += 1;
+            while (fileTrain >> row) {
+                numberOfPosts++; //1
+                if (uniqueLabels.find(row["tag"]) != uniqueLabels.end()) {//4
+                    uniqueLabels[row["tag"]]++;
+                }
+                else {
+                    uniqueLabels[row["tag"]] = 1;
+                }
+
+                if (debug==true) {
+                    cout << "  label = " << row["tag"] << ", content = " << row["content"] << endl;
+                }
+
+                for (string wordContent : unique_words(row["content"])) {//2,3
+                    if (uniqueWords.find(wordContent) != uniqueWords.end()) {
+                        uniqueWords[wordContent] += 1;
+                    }
+                    else {
+                        uniqueWords[wordContent] = 1;
+                    }
+                    //5
+                    pair<string, string> tagContentPair;
+                    tagContentPair.first = row["tag"];
+                    tagContentPair.second = wordContent;
+
+                    
+                    if (part5.find(tagContentPair) != part5.end()) {
+                        part5[tagContentPair] += 1;
+                    }
+                    else {
+                        part5[tagContentPair] = 1;
                     }
                 }
-                uniqueWords[*itr] = wordAmount;
             }
+
+
+            for (auto tagSingle : uniqueLabels) {
+                allTags.push_back(tagSingle.first);
+            }
+            for (auto wordSingle : uniqueWords) {
+                allWords.push_back(wordSingle.first);
+            }
+
+
+            sort(allTags.begin(), allTags.end());
+            sort(allWords.begin(), allWords.end());
+
+            cout << "trained on " << numberOfPosts << " examples" << endl;
+            if (debug==true) {
+                cout << "vocabulary size = " << uniqueWords.size() << endl;
+            }
+
+            cout << endl;
+            if (debug==true) {
+                cout << "classes:" << endl;
+                for (string tag : allTags) {
+                    cout << "  " << tag << ", " << uniqueLabels[tag] << 
+                        " examples, log-prior = "
+                        << log(static_cast<double>(uniqueLabels[tag])) / //what if uniquelabels[tag] is 0??? (no occuances of a specific tag
+                            static_cast<double>(numberOfPosts) << endl;
+                }
+
+                vector<pair<string, string> > pairs;
+                for (auto labelKey : part5) {
+                    pairs.push_back(labelKey.first);
+                }
+
+                // info on each pair of {tag, word}
+                cout << "classifier parameters:" << endl;
+
+                vector<pair<string, string>> iterPairs;
+                pair<string, string> specificPair;
+                for (string tags : allTags) {
+                    for (string words : allWords) {
+                        specificPair.first = tags;
+                        specificPair.second = words;
+                        iterPairs.push_back(specificPair);
+                    }
+                }
+                //count= and log likelihood stuff here
+                cout << endl;
+            }
+
+
         }
+        bool operator() (int i, int j) { return (i < j); }
+  
+        
         void labelAmountFinder(set<string> labels, string file) {
             set<string>::iterator itr;
             for (itr = labels.begin(); itr != labels.end(); itr++) {
