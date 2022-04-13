@@ -10,6 +10,7 @@ using namespace std;
 #include <cstring>
 #include <map>
 #include <set>
+#include <cmath>
 using namespace std;
 
 
@@ -45,19 +46,26 @@ int main (int argc, char *argv[]) {
         cout << "Error opening file: " << argv[2] << endl;
         return 1;
     }
+    
 
     class Classifier {
     private:
         int numberOfPosts; //1
         map <string, int> uniqueWords; //2,3
         map <string, int> uniqueLabels; //4
-        map<pair<std::string, std::string>, int> part5; //5
+        map<pair<string, string>, int> part5; //5
+        map<pair<string, string>, double> logLikelihoodMap; //testing
+        map<string, double> logPriorMap;
         bool debug;
         vector<string> allTags;
         vector<string> allWords;
         
+        
     public:
-        void ClassifierTrain(string file) {
+        
+        
+        void ClassifierTrain(string file, bool debug) {
+            numberOfPosts = 0;
             csvstream fileTrain(file);
             map<string, string> row;
             if (debug==true) {
@@ -117,12 +125,15 @@ int main (int argc, char *argv[]) {
 
             cout << endl;
             if (debug==true) {
+                
                 cout << "classes:" << endl;
                 for (string tag : allTags) {
+                    double fraction = (static_cast<double>(uniqueLabels[tag]) / static_cast<double>(numberOfPosts));
+                    double logPrior = log(fraction);
                     cout << "  " << tag << ", " << uniqueLabels[tag] << 
                         " examples, log-prior = "
-                        << log(static_cast<double>(uniqueLabels[tag])) / //what if uniquelabels[tag] is 0??? (no occuances of a specific tag
-                            static_cast<double>(numberOfPosts) << endl;
+                    << logPrior << endl;
+                    logPriorMap[tag] = logPrior;
                 }
 
                 vector<pair<string, string> > pairs;
@@ -141,13 +152,75 @@ int main (int argc, char *argv[]) {
                         specificPair.second = words;
                         iterPairs.push_back(specificPair);
                     }
+    
                 }
-                //count= and log likelihood stuff here
+            
+                for (auto pair : iterPairs) {
+                    double fraction = 0;
+                    double logLikelihood = 0;
+                    if (part5[pair] != 0) {
+                        fraction = (static_cast<double>(part5[pair]) / static_cast<double>(uniqueLabels[pair.first]));
+                        logLikelihood = log(fraction);
+                    }
+                    
+                    //Use when w does not occur in posts labeled C but does occur in the training data overall
+                    else if (uniqueWords[pair.second] > 0) {
+                        fraction = (static_cast<double>(uniqueWords[pair.second]) / static_cast<double>(numberOfPosts));
+                        logLikelihood = log(fraction);
+                    }
+                        
+                    //Use when w does not occur anywhere at all in the training set
+                    
+                    else {
+                        fraction = (static_cast<double>(1) / static_cast<double>(numberOfPosts));
+                        logLikelihood = log(fraction);
+                    }
+                    
+                    
+                    if (part5.find(pair) != part5.end() && part5[pair] != 0) {
+                        cout << "  " << pair.first << ":" << pair.second << ", count = " << part5[pair] << ", log-likelihood = " << logLikelihood << endl;;
+                    }
+                    
+                    logLikelihoodMap[pair] = logLikelihood;
+                    
+                }
+                
                 cout << endl;
+                
             }
-
-
+            
+        
         }
+        
+        //map<pair<string, string>, double> logLikelihoodMap; //testing
+        //map<string, double> logPriorMap;
+        
+        void ClassifierTest(string file) {
+            csvstream fileTest(file);
+            map<string, string> row;
+            
+            while (fileTest >> row) {
+                double logPrior = logPriorMap[row["tag"]];
+                double logProbability = logPrior;
+                pair<string, string> labelWordPair;
+                labelWordPair.first = row["tag"];
+                set<string>eachWord = unique_words(row["content"]);
+                for (auto word : eachWord) {
+                    labelWordPair.second = word;
+                    logProbability += logLikelihoodMap[labelWordPair];
+                }
+                //find/print highest log-probability score, (or alphabetically if a tie)
+                cout << "  correct = " << row["tag"] << ", predicted = " << logLikelihoodMap.first;
+                    //labelWordPair.second = row["content"];
+                    //double logLikelihood = logLikelihoodMap[labelWordPair];
+                
+               // double logProbability = logPrior;
+            
+            }
+            
+            
+        }
+        
         bool operator() (int i, int j) { return (i < j); }
   
         
@@ -183,33 +256,10 @@ int main (int argc, char *argv[]) {
 
         
     };
-    
-    //should we be iterating through the csv within the class
-    //what sort of variables should we account for in the private interface for classifier
-    //does csv stream account for the headder
-    //where should we use the uniqueWords function (within class?)
-    //code layout in general
-    //is a set a vector?
-    //should we have a set/vector for each post? should we then have an array of the sets
-
-    
-    
-  // Open file
-  csvstream csvin(argv[1]);
-
-  // A row is a map<string, string>, key = column name, value = datum
-  map<string, string> row;
-
-  // Read file
-  while (csvin >> row) {
-    cout << "row:" << "\n";
-    for (auto &col:row) {
-      const string &column_name = col.first;
-      const string &datum = col.second;
-      cout << "  " << column_name << ": " << datum << "\n";
-    }
-  }
-
+    //argv[1] is training
+    //argv[2] is testing
+    Classifier * c = new Classifier;
+    c->ClassifierTrain(argv[1], argv[3]);
 
 
     return 0;
