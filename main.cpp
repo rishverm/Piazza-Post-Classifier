@@ -209,12 +209,15 @@ int main (int argc, char *argv[]) {
         void ClassifierTest(string file) {
             csvstream fileTest(file);
             map<string, string> row;
+            //string predicted = "taco"; //IS THIS THE FIRST LABEL?
+            //double maxLogProb = 10; //IS THIS THE LOG PROBABBILITY OF THE FIRST LABEL?
             
             cout << "test data:" << endl;
             
             //put the log probabilities of each post into a map
             while (fileTest >> row) {
-                logProbabilityMap[row["tag"]] += logPriorMap[row["tag"]];
+                //double currentLogProb = logProbabilityMap[row["tag"]];
+                logProbabilityMap[row["tag"]] = logPriorMap[row["tag"]];
                 pair<string, string> labelWordPair;
                 labelWordPair.first = row["tag"];
                 set<string>eachWord = unique_words(row["content"]);
@@ -222,22 +225,37 @@ int main (int argc, char *argv[]) {
                     labelWordPair.second = word;
                     logProbabilityMap[row["tag"]] += logLikelihoodMap[labelWordPair];
                 }
-                string predicted = findMaxLogProbability(logProbabilityMap);
                 
-                cout << "  correct = " << row["tag"] << ", predicted = " << predicted << ", log-probability score = " << logProbabilityMap[predicted] << endl;
+                string predicted = findMaxLogProbability(logProbabilityMap).first;
+                double maxLogProb = findMaxLogProbability(logProbabilityMap).second;
+                
+                
+                cout << "  correct = " << row["tag"] << ", predicted = "
+                << predicted << ", log-probability score = " << maxLogProb << endl;
                 cout << "  content = " << row["content"] << endl;
                 cout << endl;
             }
           
         }
-        
-        
-        
-        string findMaxLogProbability(map<string, double> map) {
-            
-            
-            return "";
+        // make a vector of pairs of the log probabilites
+        //
+        pair<string, double> findMaxLogProbability(map<string, double> logProbabilities) {
+            pair<string, double> maxPair = *logProbabilities.begin();
+            double maxLogProb = (*logProbabilities.begin()).second;
+            for (auto &element : logProbabilities) {
+                if (maxLogProb < element.second) {
+                    maxLogProb = element.second;
+                    maxPair = element;
+                }
+                //else if (maxLogProb == element.second) {
+                    //alphabetical
+                //}
+            }
+            return maxPair;
         }
+        
+            
+        
         
         bool operator() (int i, int j) { return (i < j); }
   
