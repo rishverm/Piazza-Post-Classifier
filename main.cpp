@@ -55,6 +55,7 @@ int main (int argc, char *argv[]) {
         map <string, int> uniqueLabels; //4
         map<pair<string, string>, int> part5; //5
         map<pair<string, string>, double> logLikelihoodMap; //testing
+        map<string, double> logProbabilityMap; //testing
         map<string, double> logPriorMap;
         bool debug;
         vector<string> allTags;
@@ -211,27 +212,31 @@ int main (int argc, char *argv[]) {
             
             cout << "test data:" << endl;
             
+            //put the log probabilities of each post into a map
             while (fileTest >> row) {
-                double logPrior = logPriorMap[row["tag"]];
-                double logProbability = logPrior;
+                logProbabilityMap[row["tag"]] += logPriorMap[row["tag"]];
                 pair<string, string> labelWordPair;
                 labelWordPair.first = row["tag"];
                 set<string>eachWord = unique_words(row["content"]);
                 for (auto word : eachWord) {
                     labelWordPair.second = word;
-                    logProbability += logLikelihoodMap[labelWordPair];
+                    logProbabilityMap[row["tag"]] += logLikelihoodMap[labelWordPair];
                 }
-                //find/print highest log-probability score, (or alphabetically if a tie)
-               //cout << "  correct = " << row["tag"] << ", predicted = "
-               //  << logLikelihoodMap.first;
-                    //labelWordPair.second = row["content"];
-                    //double logLikelihood = logLikelihoodMap[labelWordPair];
+                string predicted = findMaxLogProbability(logProbabilityMap);
                 
-               // double logProbability = logPrior;
-            
+                cout << "  correct = " << row["tag"] << ", predicted = " << predicted << ", log-probability score = " << logProbabilityMap[predicted] << endl;
+                cout << "  content = " << row["content"] << endl;
+                cout << endl;
             }
+          
+        }
+        
+        
+        
+        string findMaxLogProbability(map<string, double> map) {
             
             
+            return "";
         }
         
         bool operator() (int i, int j) { return (i < j); }
