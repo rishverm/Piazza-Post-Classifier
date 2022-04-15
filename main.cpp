@@ -207,27 +207,45 @@ int main (int argc, char *argv[]) {
         //map<string, double> logPriorMap;
         
         void ClassifierTest(string file) {
+            int numCorrectPredictions = 0;
+            int numTotalPredictions = 0;
             csvstream fileTest(file);
             map<string, string> row;
             //string predicted = "taco"; //IS THIS THE FIRST LABEL?
             //double maxLogProb = 10; //IS THIS THE LOG PROBABBILITY OF THE FIRST LABEL?
             
             cout << "test data:" << endl;
-            
+            //use vector of tags instead
             //put the log probabilities of each post into a map
             while (fileTest >> row) {
-                //double currentLogProb = logProbabilityMap[row["tag"]];
-                logProbabilityMap[row["tag"]] = logPriorMap[row["tag"]];
-                pair<string, string> labelWordPair;
-                labelWordPair.first = row["tag"];
-                set<string>eachWord = unique_words(row["content"]);
-                for (auto &word : eachWord) {
-                    labelWordPair.second = word;
-                    logProbabilityMap[row["tag"]] += logLikelihoodMap[labelWordPair];
+                ++numTotalPredictions;
+                for (auto &it : allTags) {
+                    logProbabilityMap[it] = logPriorMap[it];
+                    pair<string, string> labelWordPair;
+                    labelWordPair.first = it;
+                    set<string>eachWord = unique_words(row["content"]);
+                    
+                    for (auto &word : eachWord) {
+                        
+                        
+                        
+                        labelWordPair.second = word;
+                        
+                        if (logLikelihoodMap[labelWordPair] == 0) {
+                            logLikelihoodMap[labelWordPair] = log(static_cast<double>(1) /
+                                                    static_cast<double>(numberOfPosts));
+                        }
+                        
+                        logProbabilityMap[it] += logLikelihoodMap[labelWordPair];
+                    }
+                
                 }
                 
                 string predicted = findMaxLogProbability(logProbabilityMap).first;
                 double maxLogProb = findMaxLogProbability(logProbabilityMap).second;
+                if (predicted == row["tag"]) {
+                    ++numCorrectPredictions;
+                }
                 
                 
                 cout << "  correct = " << row["tag"] << ", predicted = "
@@ -235,6 +253,12 @@ int main (int argc, char *argv[]) {
                 cout << "  content = " << row["content"] << endl;
                 cout << endl;
             }
+            
+            cout << "performance: " << numCorrectPredictions << " / " << numTotalPredictions << " posts predicted correctly" << endl;
+            
+                
+                
+            
           
         }
         // make a vector of pairs of the log probabilites
@@ -247,9 +271,7 @@ int main (int argc, char *argv[]) {
                     maxLogProb = element.second;
                     maxPair = element;
                 }
-                //else if (maxLogProb == element.second) {
-                    //alphabetical
-                //}
+                
             }
             return maxPair;
         }
