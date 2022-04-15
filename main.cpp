@@ -221,7 +221,7 @@ int main (int argc, char *argv[]) {
                 pair<string, string> labelWordPair;
                 labelWordPair.first = row["tag"];
                 set<string>eachWord = unique_words(row["content"]);
-                for (auto word : eachWord) {
+                for (auto &word : eachWord) {
                     labelWordPair.second = word;
                     logProbabilityMap[row["tag"]] += logLikelihoodMap[labelWordPair];
                 }
