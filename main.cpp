@@ -81,7 +81,8 @@ int main (int argc, char *argv[]) {
                 }
 
                 if (debug==true) {
-                    cout << "  label = " << row["tag"] << ", content = " << row["content"] << endl;
+                    cout << "  label = " << row["tag"]
+                    << ", content = " << row["content"] << endl;
                 }
 
                 for (string wordContent : unique_words(row["content"])) {//2,3
@@ -128,7 +129,8 @@ int main (int argc, char *argv[]) {
                 
                 cout << "classes:" << endl;
                 for (string tag : allTags) {
-                    double fraction = (static_cast<double>(uniqueLabels[tag]) / static_cast<double>(numberOfPosts));
+                    double fraction = (static_cast<double>(uniqueLabels[tag]) /
+                                       static_cast<double>(numberOfPosts));
                     double logPrior = log(fraction);
                     cout << "  " << tag << ", " << uniqueLabels[tag] << 
                         " examples, log-prior = "
@@ -159,26 +161,34 @@ int main (int argc, char *argv[]) {
                     double fraction = 0;
                     double logLikelihood = 0;
                     if (part5[pair] != 0) {
-                        fraction = (static_cast<double>(part5[pair]) / static_cast<double>(uniqueLabels[pair.first]));
+                        fraction = (static_cast<double>(part5[pair]) /
+                                    static_cast<double>(uniqueLabels[pair.first]));
                         logLikelihood = log(fraction);
                     }
                     
-                    //Use when w does not occur in posts labeled C but does occur in the training data overall
+                    // Use when w does not occur in posts labeled C but does occur
+                    // in the training data overall
                     else if (uniqueWords[pair.second] > 0) {
-                        fraction = (static_cast<double>(uniqueWords[pair.second]) / static_cast<double>(numberOfPosts));
+                        fraction = (static_cast<double>(uniqueWords[pair.second]) /
+                                    static_cast<double>(numberOfPosts));
                         logLikelihood = log(fraction);
                     }
                         
-                    //Use when w does not occur anywhere at all in the training set
+                    //Use when w does not occur anywhere in the training set
                     
                     else {
-                        fraction = (static_cast<double>(1) / static_cast<double>(numberOfPosts));
+                        fraction = (static_cast<double>(1) /
+                                    static_cast<double>(numberOfPosts));
                         logLikelihood = log(fraction);
                     }
                     
                     
-                    if (part5.find(pair) != part5.end() && part5[pair] != 0) {
-                        cout << "  " << pair.first << ":" << pair.second << ", count = " << part5[pair] << ", log-likelihood = " << logLikelihood << endl;;
+                    if (part5.find(pair) != part5.end()
+                        && part5[pair] != 0) {
+                        cout << "  " << pair.first << ":"
+                        << pair.second << ", count = " <<
+                        part5[pair] << ", log-likelihood = " <<
+                        logLikelihood << endl;;
                     }
                     
                     logLikelihoodMap[pair] = logLikelihood;
@@ -199,6 +209,8 @@ int main (int argc, char *argv[]) {
             csvstream fileTest(file);
             map<string, string> row;
             
+            cout << "test data:" << endl;
+            
             while (fileTest >> row) {
                 double logPrior = logPriorMap[row["tag"]];
                 double logProbability = logPrior;
@@ -210,7 +222,8 @@ int main (int argc, char *argv[]) {
                     logProbability += logLikelihoodMap[labelWordPair];
                 }
                 //find/print highest log-probability score, (or alphabetically if a tie)
-                cout << "  correct = " << row["tag"] << ", predicted = " << logLikelihoodMap.first;
+               //cout << "  correct = " << row["tag"] << ", predicted = "
+               //  << logLikelihoodMap.first;
                     //labelWordPair.second = row["content"];
                     //double logLikelihood = logLikelihoodMap[labelWordPair];
                 
@@ -260,7 +273,7 @@ int main (int argc, char *argv[]) {
     //argv[2] is testing
     Classifier * c = new Classifier;
     c->ClassifierTrain(argv[1], argv[3]);
-
+    c->ClassifierTest(argv[2]);
 
     return 0;
 }

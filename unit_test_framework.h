@@ -169,7 +169,7 @@ auto print_helper(std::ostream& os, const T& t, int, int)
 // This version of print_helper will be called when T is a pair.
 template <class First, class Second>
 auto print_helper(std::ostream& os, const std::pair<First, Second>& t, int,
-                  int) -> decltype(print(os, t.first), print(os, t.second))& {
+int) -> decltype(print(os, t.first), print(os, t.second))& {
     os << '(';
     print(os, t.first);
     os << ',';

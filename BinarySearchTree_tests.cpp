@@ -387,25 +387,25 @@ TEST(test_traverse_inorder_3) {
 }
 
 TEST(test_traverse_inorder_4) {
-    BinarySearchTree<int> tree;
-    tree.insert(10);
-    tree.insert(5);
-    tree.insert(15);
-    tree.insert(2);
-    tree.insert(4);
-    tree.insert(1);
-    tree.insert(3);
-    tree.insert(12);
-    tree.insert(17);
-    tree.insert(18);
-    tree.insert(11);
-    tree.insert(14);
-    tree.insert(16);
+    BinarySearchTree<char> tree;
+    tree.insert('j');
+    tree.insert('e');
+    tree.insert('o');
+    tree.insert('b');
+    tree.insert('d');
+    tree.insert('a');
+    tree.insert('c');
+    tree.insert('l');
+    tree.insert('q');
+    tree.insert('r');
+    tree.insert('k');
+    tree.insert('n');
+    tree.insert('p');
     ostringstream oss_inorder;
     tree.traverse_inorder(oss_inorder);
     cout << "inorder" << endl;
     cout << oss_inorder.str() << endl << endl;
-    ASSERT_TRUE(oss_inorder.str() == "1 2 3 4 5 10 11 12 14 15 16 17 18 ");
+    ASSERT_TRUE(oss_inorder.str() == "a b c d e j k l n o p q r ");
 }
 
 //test with 0 nodes

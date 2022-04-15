@@ -457,9 +457,11 @@ private:
               return singleNode;
           }
 
-          //if item < node, then create a new recurse statement checking if item < node->left
+          //if item < node, then create a new recurse
+        //statement checking if item < node->left
             //node = node->left
-          //if item > node, then create a new recurse statement checking if item < node->right
+          //if item > node, then create a new recurse
+        //statement checking if item < node->right
             //node = node->right
 
 
@@ -539,7 +541,8 @@ private:
   // NOTE:    This function must be tree recursive.
   static bool check_sorting_invariant_impl(const Node *node, Compare less) {
       //issue with branches sorted, but whole tree not sorted
-      //issue with broken invariant, but returning the truth of final sorted recursion (returns whether last check was true)
+      //issue with broken invariant, but returning the truth
+      //of final sorted recursion (returns whether last check was true)
       if (empty_impl(node)) {
           return true;
       }

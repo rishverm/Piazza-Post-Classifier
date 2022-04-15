@@ -211,7 +211,8 @@ template <typename K, typename V, typename C>
 //           an iterator to the newly inserted element, along with
 //           the value true.
 template <typename K, typename V, typename C>
-    std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(const Pair_type &val) {
+    std::pair<typename Map<K, V, C>::Iterator, bool>
+    Map<K, V, C>::insert(const Pair_type &val) {
        //if key is in Map, return false and corresponding iterator
         
         if (variable.find(val) != variable.end()) {
